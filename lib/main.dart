@@ -117,9 +117,9 @@ class _loginState extends State<login> {
     var checkUser = false;
 
 
-    final _formKey = GlobalKey<FormState>();
+    final _formKey = GlobalKey<FormState>();  //para verificacion de los cambos de carga de texto
 
-    Persona userLogueado = Persona(0, "", "", "", "", "", "", "", "", "", "");
+    Persona userLogueado = Persona(0, "", "", "", "", "", "", "", "", "", "");   //objeto persona para el usuario que va loguearse
 
     return Container(
       decoration: BoxDecoration(

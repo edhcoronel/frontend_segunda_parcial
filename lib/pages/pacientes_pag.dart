@@ -7,10 +7,7 @@ import 'package:frontend_segunda_parcial/pages/agg_paciente.dart';
 
 class Pacientes extends StatefulWidget {
 
-  final String name;
-  final String lastName;
-  final bool porName;
-  const Pacientes({Key? key, required this.name, required this.lastName, required this.porName}) : super(key: key);
+  const Pacientes({Key? key}) : super(key: key);
 
 
   @override
@@ -18,6 +15,10 @@ class Pacientes extends StatefulWidget {
 }
 
 class _PacientesState extends State<Pacientes> {
+
+  late String name = "";
+  late String lastName = "";
+  late bool porName = false;
 
   TextEditingController editingController = TextEditingController();
 
@@ -112,19 +113,19 @@ class _PacientesState extends State<Pacientes> {
 
   @override
   void initState() {
-    if(widget.name == "" && widget.lastName == "" && buscar == false){
+    if(name == "" && lastName == "" && buscar == false){
       final url = "https://equipoyosh.com/stock-nutrinatalia/persona";
       _listadoPersonas = _getPersonas(url);
-    }else if(widget.name == "nombre" && buscar == false){
+    }else if(name == "nombre" && buscar == false){
       final url = "https://equipoyosh.com/stock-nutrinatalia/persona?inicio=0&orderBy=nombre&orderDir=asce";
       _listadoPersonas = _getPersonas(url);
-    }else if(widget.lastName == "apellido" && buscar == false){
+    }else if(lastName == "apellido" && buscar == false){
       final url = "https://equipoyosh.com/stock-nutrinatalia/persona?inicio=0&orderBy=apellido&orderDir=asce";
       _listadoPersonas = _getPersonas(url);
     }else if(buscar == true){
       var url = "https://equipoyosh.com/stock-nutrinatalia/persona?like=S&ejemplo=%7B%22apellido%22%3A%22$v%22%7D";
       _listadoPersonas = _getPersonas(url);
-    }else if(buscar == true && widget.porName){
+    }else if(buscar == true && porName){
       var url = "https://equipoyosh.com/stock-nutrinatalia/persona?like=S&ejemplo=%7B%22nombre%22%3A%22$v%22%7D";
       _listadoPersonas = _getPersonas(url);
     }
@@ -214,21 +215,33 @@ class _PacientesState extends State<Pacientes> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: () {
-                                      Navigator.push(
+                                      porName = true;
+                                      name = "nombre";
+                                      lastName = "";
+                                      setState(() {
+                                        initState();
+                                      });
+                                      Navigator.pop(context);
+                                      /*Navigator.push(
                                           context,
                                           MaterialPageRoute(builder: (context) => Pacientes(name: "nombre",lastName: "",porName: true,))
-                                      );
+                                      );*/
                                     },
                                     child: Text('Nombre'),
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      var _aux = widget.porName;
-                                      _aux = false;
-                                      Navigator.push(
+                                      porName = false;
+                                      name = "";
+                                      lastName = "apellido";
+                                      setState(() {
+                                        initState();
+                                      });
+                                      Navigator.pop(context);
+                                      /*Navigator.push(
                                           context,
                                           MaterialPageRoute(builder: (context) => Pacientes(name: "",lastName: "apellido", porName: _aux,))
-                                      );
+                                      );*/
                                     },
                                     child: Text('Apellido'),
                                   ),

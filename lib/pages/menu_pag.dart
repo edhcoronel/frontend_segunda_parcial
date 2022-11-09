@@ -159,7 +159,7 @@ class _botonPacientesState extends State<botonPacientes> {
       onPressed: () {
         Navigator.push(
             context,
-            MaterialPageRoute(builder: (context)=> Pacientes(name: "",lastName: "",porName: false,))
+            MaterialPageRoute(builder: (context)=> Pacientes())
         );
         print('Button pressed');
       },

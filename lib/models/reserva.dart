@@ -1,4 +1,5 @@
 
+
 class Reserva {
   late int? idReserva;
   late String fecha;
@@ -8,9 +9,12 @@ class Reserva {
   late String idCliente;
   late String empleado;
   late String cliente;
+  late String fechaCadena;
+  late String horaInicioCadena;
+  late String horaFinCadena;
 
 
-  Reserva(id, fecha, ini, fin, empleado, cliente,emple, clien) {
+  Reserva(id, fecha, ini, fin, empleado, cliente,emple, clien,fechaCadena,iniCadena,finCadena) {
     this.idReserva = id;
     this.fecha = fecha;
     this.horaInicio = ini;
@@ -19,5 +23,8 @@ class Reserva {
     this.idCliente = cliente;
     this.empleado = emple;
     this.cliente = clien;
+    this.fechaCadena = fechaCadena;
+    this.horaInicioCadena = iniCadena;
+    this.horaFinCadena = finCadena;
   }
 }

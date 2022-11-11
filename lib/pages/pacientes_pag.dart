@@ -169,12 +169,6 @@ class _PacientesState extends State<Pacientes> {
                       },
                       child: Padding(
                         child: TextField(
-                          /*onChanged: (value) {
-                            //filterSearchResults(value);
-                            print(value);
-                            var url = "https://equipoyosh.com/stock-nutrinatalia/persona?like=S&ejemplo=%7B%22apellido%22%3A%22$value%22%7D";
-                            _listadoPersonas = _getPersonas(url);
-                          },**/
                           onChanged: (value){
                             buscar = true;
                             v = value;
@@ -218,14 +212,12 @@ class _PacientesState extends State<Pacientes> {
                                       porName = true;
                                       name = "nombre";
                                       lastName = "";
+                                      buscador = false;
+                                      buscar = false;
                                       setState(() {
                                         initState();
+                                        Navigator.pop(context);
                                       });
-                                      Navigator.pop(context);
-                                      /*Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => Pacientes(name: "nombre",lastName: "",porName: true,))
-                                      );*/
                                     },
                                     child: Text('Nombre'),
                                   ),
@@ -234,14 +226,13 @@ class _PacientesState extends State<Pacientes> {
                                       porName = false;
                                       name = "";
                                       lastName = "apellido";
+                                      buscador = false;
+                                      buscar = false;
                                       setState(() {
                                         initState();
+                                        Navigator.pop(context);
                                       });
-                                      Navigator.pop(context);
-                                      /*Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => Pacientes(name: "",lastName: "apellido", porName: _aux,))
-                                      );*/
+
                                     },
                                     child: Text('Apellido'),
                                   ),
@@ -259,7 +250,7 @@ class _PacientesState extends State<Pacientes> {
                         ));
                   },
                   title: Text("Ordenar por"),
-                  trailing: Icon(Icons.add),
+                  trailing: Icon(Icons.align_horizontal_left_rounded),
                 ),
               ),
               Expanded(

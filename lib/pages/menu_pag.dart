@@ -20,6 +20,7 @@ class _MenuState extends State<Menu> {
 
   late Persona userLogueado;
   Future<List<Persona>>? _listadoPersonas;
+  List<Persona> usersPacientes =[];
 
   Future<List<Persona>> _getPersonas() async{
     try {
@@ -37,6 +38,7 @@ class _MenuState extends State<Menu> {
 
         for (var item in jsonData["lista"]){
           Persona _p = Persona(0, "", "", "", "", "", "", "", "", "", "");
+          _p.nombreCompleto = item["nombreCompleto"];
           _p.idPersona = item["idPersona"];
           _p.nombre = item["nombre"];
           _p.tipoPersona = item["tipoPersona"];
@@ -62,6 +64,7 @@ class _MenuState extends State<Menu> {
             userLogueado = _p;
           }
           personas.add(_p);
+          usersPacientes.add(_p);
         }
         //print(personas);
         return personas;
@@ -90,7 +93,7 @@ class _MenuState extends State<Menu> {
       appBar: AppBar(
         title: Text("Menu"),
       ),
-      body: modulos(userLogueado,profesionales: widget.profesionales,),
+      body: modulos(userLogueado,profesionales: widget.profesionales,pacientes: usersPacientes,),
     );
   }
 
@@ -99,8 +102,9 @@ class _MenuState extends State<Menu> {
 
 class modulos extends StatefulWidget {
   final List<Persona> profesionales;
+  final List<Persona> pacientes;
   final Persona userLogueado;
-  const modulos(this.userLogueado,{Key? key, required this.profesionales}) : super(key: key);
+  const modulos(this.userLogueado,{Key? key, required this.profesionales, required this.pacientes}) : super(key: key);
 
   @override
   State<modulos> createState() => _modulosState();
@@ -122,7 +126,7 @@ class _modulosState extends State<modulos> {
             children: [
               botonPacientes(),
               SizedBox(height: 15),
-              botonReservas(widget.userLogueado,profesionales: widget.profesionales,),
+              botonReservas(widget.userLogueado,profesionales: widget.profesionales,pacientes:widget.pacientes,),
               SizedBox(height: 15),
               botonFicha(),
               SizedBox(height: 15),
@@ -171,8 +175,9 @@ class _botonPacientesState extends State<botonPacientes> {
 
 class botonReservas extends StatefulWidget {
   final List<Persona> profesionales;
+  final List<Persona> pacientes;
   final Persona userLogueado;
-  const botonReservas(this.userLogueado,{Key? key, required this.profesionales}) : super(key: key);
+  const botonReservas(this.userLogueado,{Key? key, required this.profesionales, required this.pacientes}) : super(key: key);
 
   @override
   State<botonReservas> createState() => _botonReservasState();
@@ -195,7 +200,7 @@ class _botonReservasState extends State<botonReservas> {
       onPressed: () {
         Navigator.push(
             context,
-            MaterialPageRoute(builder: (context)=> Reservas(widget.userLogueado,profesionales: widget.profesionales,))
+            MaterialPageRoute(builder: (context)=> Reservas(widget.userLogueado,profesionales: widget.profesionales,pacientes: widget.pacientes,))
         );
         print('Button pressed');
       },

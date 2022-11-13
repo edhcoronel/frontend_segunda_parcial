@@ -128,7 +128,7 @@ class _modulosState extends State<modulos> {
               SizedBox(height: 15),
               botonReservas(widget.userLogueado,profesionales: widget.profesionales,pacientes:widget.pacientes,),
               SizedBox(height: 15),
-              botonFicha(),
+              botonFicha(widget.userLogueado,profesionales: widget.profesionales,pacientes:widget.pacientes,),
               SizedBox(height: 15),
               botonSalir(),
             ],
@@ -210,8 +210,18 @@ class _botonReservasState extends State<botonReservas> {
 }
 
 
-class botonFicha extends StatelessWidget {
+class botonFicha extends StatefulWidget {
+  final List<Persona> profesionales;
+  final List<Persona> pacientes;
+  final Persona userLogueado;
+  const botonFicha(this.userLogueado,{Key? key, required this.profesionales, required this.pacientes}) : super(key: key);
 
+
+  @override
+  State<botonFicha> createState() => _botonFichaState();
+}
+
+class _botonFichaState extends State<botonFicha> {
   final ButtonStyle flatButtonStyle = TextButton.styleFrom(
     foregroundColor: Colors.white, minimumSize: Size(88, 44),
     padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -228,7 +238,7 @@ class botonFicha extends StatelessWidget {
       onPressed: () {
         Navigator.push(
             context,
-            MaterialPageRoute(builder: (context)=> Fichas())
+            MaterialPageRoute(builder: (context)=> Fichas(widget.userLogueado,profesionales: widget.profesionales,pacientes: widget.pacientes,))
         );
         print('Button pressed');
       },

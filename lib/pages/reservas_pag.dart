@@ -6,7 +6,6 @@ import 'package:frontend_segunda_parcial/models/reserva.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:frontend_segunda_parcial/models/persona.dart';
-import 'package:frontend_segunda_parcial/pages/reservas_otros.dart';
 
 class Reservas extends StatefulWidget {
   final List<Persona> profesionales;
@@ -23,7 +22,9 @@ class _ReservasState extends State<Reservas> {
   DateTime hoy = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   late bool allReservas = false;
   late bool porCliente = false;
-
+  late bool porFisio = false;
+  late int idFisio;
+  late String nameFisio = widget.userLogueado.nombreCompleto;
 
   late bool misReservas = false;
   Future<List<Reserva>>? _listadoReservas;
@@ -218,15 +219,15 @@ class _ReservasState extends State<Reservas> {
     });
   }
   //1. call de nuestro datapicker
-  void callDatePicker(context,lisAux,index) async{
+  void callDatePicker() async{
     var selectedDate = await getDatePickerWidget();
     setState(() {
       _currentSelectedDate = selectedDate;
     });
-    Navigator.push(
+    /*Navigator.push(
         context,
         MaterialPageRoute(builder: (context)=> OtrasReservas(profesionales: widget.profesionales, userLogueado: widget.userLogueado, fechaForListReservas: _currentSelectedDate,fisioterapeuta: lisAux[index],),)
-    );
+    );*/
   }
   Future<DateTime?> getDatePickerWidget(){
     return showDatePicker(
@@ -248,7 +249,7 @@ class _ReservasState extends State<Reservas> {
     var lisAuxClientes = widget.pacientes;
     return Scaffold(
         appBar: AppBar(
-          title: getTitleAppBar(allReservas),
+          title: getTitleAppBar(allReservas,porFisio,porCliente),
           actions: [
             PopupMenuButton<int>(
                 color: Colors.blue[100],
@@ -261,6 +262,7 @@ class _ReservasState extends State<Reservas> {
                       allReservas = true;
                       porCliente = false;
                       misReservas = false;
+                      porFisio = false;
                       setState(() {
                         initState();
                       });
@@ -277,6 +279,7 @@ class _ReservasState extends State<Reservas> {
                       allReservas = false;
                       porCliente = false;
                       misReservas = true;
+                      porFisio = false;
                       _fechaDesde = hoy;
                       _fechaHasta = hoy;
                       setState(() {
@@ -291,6 +294,7 @@ class _ReservasState extends State<Reservas> {
                       allReservas = false;
                       porCliente = true;
                       misReservas = false;
+                      porFisio = false;
                       setState(() {
                         initState();
                       });
@@ -318,6 +322,14 @@ class _ReservasState extends State<Reservas> {
               //print(_listaDeReservasAPI);
               return Column(
                 children: [
+                  (allReservas == false)
+                  ? Container(
+                    child: Row(
+                      children: [
+                        getNameAgenda(widget.userLogueado.nombreCompleto, nameFisio),
+                      ],
+                    ),
+                  ):Container(child: null),
                 (allReservas == false)
                  ? Container(
                    child: Row(
@@ -366,8 +378,33 @@ class _ReservasState extends State<Reservas> {
                                       itemBuilder: (context,index){
                                         return ListTile(
                                           onTap: (){
-                                            callDatePicker(context,lisAuxEmpleados,index);
+                                            //callDatePicker();
+                                            if(lisAuxEmpleados[index].idPersona == widget.userLogueado.idPersona){
+                                              allReservas = false;
+                                              porCliente = false;
+                                              misReservas = true;
+                                              porFisio = false;
+                                              _fechaDesde = hoy;
+                                              _fechaHasta = hoy;
+                                              nameFisio = lisAuxEmpleados[index].nombreCompleto;
+                                              setState(() {
+                                                initState();
+                                              });
+                                            }else{
+                                              allReservas = false;
+                                              porCliente = false;
+                                              misReservas = false;
+                                              porFisio = true;
+                                              idFisio = lisAuxEmpleados[index].idPersona;
+                                              nameFisio = lisAuxEmpleados[index].nombreCompleto;
+                                              _fechaDesde = hoy;
+                                              _fechaHasta = hoy;
+                                              setState(() {
+                                                initState();
+                                              });
+                                            }
                                             print(_currentSelectedDate);
+                                            Navigator.pop(context);
                                           },
                                           title: Text(lisAuxEmpleados[index].nombreCompleto),
                                           subtitle: Text(lisAuxEmpleados[index].email!),
@@ -478,6 +515,9 @@ class _ReservasState extends State<Reservas> {
                                                                 onTap: (){
                                                                   idCliente = lisAuxClientes[index].idPersona;
                                                                   //callDatePicker(context,lisAuxClientes,index);
+                                                                  if(porFisio == true){
+                                                                    fisio = idFisio.toString();
+                                                                  }
 
                                                                   saveReserva(fisio,fechaCadena,iniCadena,finCadena,idEmpleado,idCliente);
                                                                   setState(() {
@@ -680,15 +720,32 @@ class _ReservasState extends State<Reservas> {
       var url = "https://equipoyosh.com/stock-nutrinatalia/reserva";
       print(url);
       _listadoReservas = _getReservas(url);
-    }else if(_fechaDesde == hoy && _fechaHasta == hoy){
+    }else if(_fechaDesde == hoy && _fechaHasta == hoy && porFisio == false){
       fecha = dateTimeToCadena(dateToday);
       print(fecha);
       var id = widget.userLogueado.idPersona;
       var url = "https://equipoyosh.com/stock-nutrinatalia/persona/$id/agenda?fecha=$fecha";
       print(url);
       _listadoReservas = _getReservas(url);
-    }else if(_fechaDesde != hoy || _fechaHasta != hoy){
+    }else if(_fechaDesde != hoy || _fechaHasta != hoy && porFisio == false){
       var id = widget.userLogueado.idPersona;
+      var desde = dateTimeToCadena(_fechaDesde);
+      var hasta = dateTimeToCadena(_fechaHasta);
+      var url = "https://equipoyosh.com/stock-nutrinatalia/reserva?ejemplo=%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A$id%7D%2C%22fechaDesdeCadena%22%3A%22$desde%22%2C%22fechaHastaCadena%22%3A%22$hasta%22%7D";
+      print(url);
+      _listadoReservas = _getReservas(url);
+      //%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A3%7D%2C%22fechaDesdeCadena%22%3A%2220190903%22%2C%22fechaHastaCadena%22%3A%220190903%22%7D
+    }else if(_fechaDesde == hoy && _fechaHasta == hoy && porFisio == true){
+      print("Entro en ordenamiento por fisio");
+      fecha = dateTimeToCadena(dateToday);
+      print(fecha);
+      var id = widget.userLogueado.idPersona;
+      var url = "https://equipoyosh.com/stock-nutrinatalia/persona/$id/agenda?fecha=$fecha";
+      print(url);
+      _listadoReservas = _getReservas(url);
+    }else if(_fechaDesde != hoy || _fechaHasta != hoy && porFisio == true){
+      print("Entro en ordenamiento por fisio");
+      var id = idFisio;
       var desde = dateTimeToCadena(_fechaDesde);
       var hasta = dateTimeToCadena(_fechaHasta);
       var url = "https://equipoyosh.com/stock-nutrinatalia/reserva?ejemplo=%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A$id%7D%2C%22fechaDesdeCadena%22%3A%22$desde%22%2C%22fechaHastaCadena%22%3A%22$hasta%22%7D";
@@ -927,13 +984,26 @@ Widget getInfoReserva(fecha,horaIni,horaFin,fisio,cliente,flagAsistio,observacio
       +"\nHora Fin: "+ horaFin+"\nFisioterapeuta: "+ fisio+"\nPaciente: "+ cliente+"\nObservacion: "+ observacion);
 }
 
-Widget getTitleAppBar(allReservas){
+Widget getTitleAppBar(allReservas,porFisio,porCliente){
   var title;
   if(allReservas == true){
     title = "Todas las Reservas";
+  }else if(porFisio == true || porCliente == true){
+    title = "Reservas";
   }else{
-    title = "Mis Reservas";
+    title = "Reservas";
   }
   return Text(title);
+}
+
+Widget getNameAgenda(nameFisioLogueado,nameFisio){
+  var title;
+  if(nameFisioLogueado == nameFisio){
+    title = "\n   ■   Mi Agenda\n";
+  }else{
+    title = "\n   ■   Agenda de: $nameFisio\n";
+  }
+  //Text("\n   Agenda de: $nameFisio\n",style: TextStyle(fontSize: 17),),
+  return Text(title,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),);
 }
 

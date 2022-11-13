@@ -12,9 +12,11 @@ class Reserva {
   late String fechaCadena;
   late String horaInicioCadena;
   late String horaFinCadena;
+  late String flagAsistio;
+  late String observacion;
 
 
-  Reserva(id, fecha, ini, fin, empleado, cliente,emple, clien,fechaCadena,iniCadena,finCadena) {
+  Reserva(id, fecha, ini, fin, empleado, cliente,emple, clien,fechaCadena,iniCadena,finCadena,flagAsistio,observacion) {
     this.idReserva = id;
     this.fecha = fecha;
     this.horaInicio = ini;
@@ -26,5 +28,7 @@ class Reserva {
     this.fechaCadena = fechaCadena;
     this.horaInicioCadena = iniCadena;
     this.horaFinCadena = finCadena;
+    this.flagAsistio = flagAsistio;
+    this.observacion = observacion;
   }
 }

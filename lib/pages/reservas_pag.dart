@@ -1,10 +1,7 @@
 import 'dart:convert';
-
-
 import 'package:flutter/material.dart';
 import 'package:frontend_segunda_parcial/models/reserva.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:frontend_segunda_parcial/models/persona.dart';
 
 class Reservas extends StatefulWidget {
@@ -24,6 +21,7 @@ class _ReservasState extends State<Reservas> {
   late bool porCliente = false;
   late bool porFisio = false;
   late int idFisio;
+  late String userFisio;
   var idCliente;
   var nameCliente;
   late String nameFisio = widget.userLogueado.nombreCompleto;
@@ -434,6 +432,7 @@ class _ReservasState extends State<Reservas> {
                                               misReservas = false;
                                               porFisio = true;
                                               idFisio = lisAuxEmpleados[index].idPersona;
+                                              userFisio = lisAuxEmpleados[index].usuarioLogin;
                                               nameFisio = lisAuxEmpleados[index].nombreCompleto;
                                               _fechaDesde = hoy;
                                               _fechaHasta = hoy;
@@ -554,7 +553,7 @@ class _ReservasState extends State<Reservas> {
                                                                   idCliente = lisAuxClientes[index].idPersona;
                                                                   //callDatePicker(context,lisAuxClientes,index);
                                                                   if(porFisio == true){
-                                                                    fisio = idFisio.toString();
+                                                                    fisio = userFisio;
                                                                   }
 
                                                                   saveReserva(fisio,fechaCadena,iniCadena,finCadena,idEmpleado,idCliente);

@@ -277,6 +277,8 @@ class _ReservasState extends State<Reservas> {
                       allReservas = false;
                       porCliente = false;
                       misReservas = true;
+                      _fechaDesde = hoy;
+                      _fechaHasta = hoy;
                       setState(() {
                         initState();
                       });

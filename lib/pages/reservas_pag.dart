@@ -17,11 +17,19 @@ class Reservas extends StatefulWidget {
   @override
   State<Reservas> createState() => _ReservasState();
 }
-
+enum Asistio{si,no}
 class _ReservasState extends State<Reservas> {
 
+  DateTime hoy = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  late bool allReservas = false;
+  late bool porCliente = false;
 
+
+  late bool misReservas = false;
   Future<List<Reserva>>? _listadoReservas;
+  final myControllerOk = TextEditingController();
+  final myControllerObs = TextEditingController();
+
   Future<List<Reserva>> _getReservas(url) async {
     var id = widget.userLogueado.idPersona;
     print(id);
@@ -38,47 +46,113 @@ class _ReservasState extends State<Reservas> {
       String body = utf8.decode(response.bodyBytes);
       final jsonData = jsonDecode(body);
       //print(jsonData);
-
-      for (var item in jsonData) {
-        Reserva _r = Reserva(0, "", "", "", "", "", "", "", "","","");
-        //print(item["idReserva"]);
-        _r.idReserva = item["idReserva"];
-        //print(item["fecha"]);
-        _r.fecha = item["fecha"];
-        //print(item["horaFin"]);
-        _r.horaFin = item["horaFin"];
-        //print(item["horaInicio"]);
-        _r.horaInicio = item["horaInicio"];
-        //print(item["idReserva"]);
-        //_r.idEmpleado = item["idEmpleado"];
-        //_r.idCliente = item["idCliente"];
-        if(item["idEmpleado"] != null){
+      var contador = 0;
+      print(allReservas == true || ((_fechaDesde != hoy || _fechaHasta != hoy) && allReservas == false));
+      if(allReservas == true || ((_fechaDesde != hoy || _fechaHasta != hoy) && allReservas == false) ){
+        for (var item in jsonData["lista"]) {
+          print(contador++);
+          Reserva _r = Reserva(0, "", "", "", "", "", "", "", "", "", "","","");
+          //print(item["idReserva"]);
+          if(item["flagAsistio"] != null){
+            _r.flagAsistio = item["flagAsistio"];
+          }else{
+            _r.flagAsistio = "";
+          }
+          if(item["observacion"] != null){
+            _r.observacion = item["observacion"];
+          }else{
+            _r.observacion = "";
+          }
+          _r.idReserva = item["idReserva"];
+          //print(item["fecha"]);
+          _r.fecha = item["fecha"];
+          //print(item["horaFin"]);
+          _r.horaFin = item["horaFin"];
+          //print(item["horaInicio"]);
+          _r.horaInicio = item["horaInicio"];
+          //print(item["idReserva"]);
           //_r.idEmpleado = item["idEmpleado"];
-          //print("entro aca empleado valor de id Empleado"+_r.idEmpleado.toString());
-          if(item["idEmpleado"]["nombreCompleto"].toString() != "null"){
-            _r.empleado = item["idEmpleado"]["nombreCompleto"];
-            //print("Nombre del empleado "+ _r.empleado);
+          //_r.idCliente = item["idCliente"];
+          if(item["idEmpleado"] != null){
+            //_r.idEmpleado = item["idEmpleado"];
+            //print("entro aca empleado valor de id Empleado"+_r.idEmpleado.toString());
+            if(item["idEmpleado"]["nombreCompleto"].toString() != "null"){
+              _r.empleado = item["idEmpleado"]["nombreCompleto"];
+              //print("Nombre del empleado "+ _r.empleado);
+            }else{
+              _r.empleado = "";
+            }
+
           }else{
             _r.empleado = "";
           }
+          if(item["idCliente"] != null){
+            //_r.idCliente = item["idCliente"];
+            //print("entro aca cliente");
+            _r.cliente = item["idCliente"]["nombreCompleto"];
+          }else{
+            _r.cliente = "";
+          }
+          _r.fechaCadena = item["fechaCadena"];
+          _r.horaInicioCadena = item["horaInicioCadena"];
+          _r.horaFinCadena = item["horaFinCadena"];
+          //print("Datos reserva: id:" +_r.idReserva.toString() +" fecha: " +_r.fecha+ " ini: "+_r.horaInicio+" fin"+_r.horaFin+" Empleado: "+_r.empleado+" Cliente: "+_r.cliente);
+          reservas.add(_r);
 
-        }else{
-          _r.empleado = "";
         }
-        if(item["idCliente"] != null){
+      }else{
+        for (var item in jsonData) {
+          Reserva _r = Reserva(0, "", "", "", "", "", "", "", "", "", "","","");
+          //print(item["idReserva"]);
+          if(item["flagAsistio"] != null){
+            _r.flagAsistio = item["flagAsistio"];
+          }else{
+            _r.flagAsistio = "";
+          }
+          if(item["observacion"] != null){
+            _r.observacion = item["observacion"];
+          }else{
+            _r.observacion = "";
+          }
+          _r.idReserva = item["idReserva"];
+          //print(item["fecha"]);
+          _r.fecha = item["fecha"];
+          //print(item["horaFin"]);
+          _r.horaFin = item["horaFin"];
+          //print(item["horaInicio"]);
+          _r.horaInicio = item["horaInicio"];
+          //print(item["idReserva"]);
+          //_r.idEmpleado = item["idEmpleado"];
           //_r.idCliente = item["idCliente"];
-          //print("entro aca cliente");
-          _r.cliente = item["idCliente"]["nombreCompleto"];
-        }else{
-          _r.cliente = "";
-        }
-        _r.fechaCadena = item["fechaCadena"];
-        _r.horaInicioCadena = item["horaInicioCadena"];
-        _r.horaFinCadena = item["horaFinCadena"];
-        print("Datos reserva: id:" +_r.idReserva.toString() +" fecha: " +_r.fecha+ " ini: "+_r.horaInicio+" fin"+_r.horaFin+" Empleado: "+_r.empleado+" Cliente: "+_r.cliente);
-        reservas.add(_r);
+          if(item["idEmpleado"] != null){
+            //_r.idEmpleado = item["idEmpleado"];
+            //print("entro aca empleado valor de id Empleado"+_r.idEmpleado.toString());
+            if(item["idEmpleado"]["nombreCompleto"].toString() != "null"){
+              _r.empleado = item["idEmpleado"]["nombreCompleto"];
+              //print("Nombre del empleado "+ _r.empleado);
+            }else{
+              _r.empleado = "";
+            }
 
+          }else{
+            _r.empleado = "";
+          }
+          if(item["idCliente"] != null){
+            //_r.idCliente = item["idCliente"];
+            //print("entro aca cliente");
+            _r.cliente = item["idCliente"]["nombreCompleto"];
+          }else{
+            _r.cliente = "";
+          }
+          _r.fechaCadena = item["fechaCadena"];
+          _r.horaInicioCadena = item["horaInicioCadena"];
+          _r.horaFinCadena = item["horaFinCadena"];
+          print("Datos reserva: id:" +_r.idReserva.toString() +" fecha: " +_r.fecha+ " ini: "+_r.horaInicio+" fin"+_r.horaFin+" Empleado: "+_r.empleado+" Cliente: "+_r.cliente);
+          reservas.add(_r);
+
+        }
       }
+
       //print(reservas);
       return reservas;
     } else {
@@ -87,6 +161,62 @@ class _ReservasState extends State<Reservas> {
 
   }
   var _currentSelectedDate;
+  late DateTime _fechaDesde = hoy;
+  late DateTime _fechaHasta = hoy;
+
+  void getMensajeRangoNoValido(context,mensaje){
+    showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: Text("Rango no valido"),
+            content: Text(mensaje),
+            actions: [
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Ok'),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+
+  void callDatePickerRango(contex,value) async{
+    var selectedDate = await getDatePickerWidget();
+    var aux1,aux2;
+    setState(() {
+      if(value == 1){
+        if(selectedDate!.year > _fechaHasta.year){
+          getMensajeRangoNoValido(context, "La fecha 'Desde' no puede ser MAYOR que la fecha 'Hasta'");
+        }else if(selectedDate.year == _fechaHasta.year && selectedDate.month > _fechaHasta.month){
+          getMensajeRangoNoValido(context, "La fecha 'Desde' no puede ser MAYOR que la fecha 'Hasta'");
+        }else if(selectedDate.year == _fechaHasta.year && selectedDate.month == _fechaHasta.month && selectedDate.day > _fechaHasta.day){
+          getMensajeRangoNoValido(context, "La fecha 'Desde' no puede ser MAYOR que la fecha 'Hasta'");
+        }else{
+          aux1 = selectedDate;
+          _fechaDesde = aux1;
+        }
+        initState();
+      }else if(value == 2){
+        if(selectedDate!.year < _fechaDesde.year){
+          getMensajeRangoNoValido(context, "La fecha 'Hasta' no puede ser MENOR que la fecha 'Desde'");
+        }else if(selectedDate.year == _fechaDesde.year && selectedDate.month < _fechaDesde.month){
+          getMensajeRangoNoValido(context, "La fecha 'Hasta' no puede ser MENOR que la fecha 'Desde'");
+        }else if(selectedDate.year == _fechaDesde.year && selectedDate.month == _fechaDesde.month && selectedDate.day < _fechaDesde.day){
+          getMensajeRangoNoValido(context, "La fecha 'Hasta' no puede ser MENOR que la fecha 'Desde'");
+        }else{
+          aux2 = selectedDate;
+          _fechaHasta = aux2;
+        }
+        initState();
+      }
+    });
+  }
   //1. call de nuestro datapicker
   void callDatePicker(context,lisAux,index) async{
     var selectedDate = await getDatePickerWidget();
@@ -118,7 +248,59 @@ class _ReservasState extends State<Reservas> {
     var lisAuxClientes = widget.pacientes;
     return Scaffold(
         appBar: AppBar(
-          title: Text("Agenda del dia"),
+          title: getTitleAppBar(allReservas),
+          actions: [
+            PopupMenuButton<int>(
+                color: Colors.blue[100],
+                onSelected: (value) {},
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 1,
+                    child: Text("Todas las Reservas"),
+                    onTap: (){
+                      allReservas = true;
+                      porCliente = false;
+                      misReservas = false;
+                      setState(() {
+                        initState();
+                      });
+                      /*Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context)=> AllReservas(widget.userLogueado,profesionales: widget.profesionales,pacientes: widget.pacientes,))
+                      );*/
+                    },
+                  ),
+                  PopupMenuItem(
+                    value: 2,
+                    child: Text("Mis Reservas"),
+                    onTap: (){
+                      allReservas = false;
+                      porCliente = false;
+                      misReservas = true;
+                      setState(() {
+                        initState();
+                      });
+                    },
+                  ),
+                  PopupMenuItem(
+                    value: 3,
+                    child: Text("Por Cliente"),
+                    onTap: (){
+                      allReservas = false;
+                      porCliente = true;
+                      misReservas = false;
+                      setState(() {
+                        initState();
+                      });
+                      /*Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context)=> AllReservas(widget.userLogueado,profesionales: widget.profesionales,pacientes: widget.pacientes,))
+                      );*/
+                    },
+                  ),
+
+                ],)
+          ],
         ),
         body: FutureBuilder(
           future: _listadoReservas,
@@ -127,60 +309,129 @@ class _ReservasState extends State<Reservas> {
               //print(snapshot.data);
               final _listaDeReservasAPI = snapshot.data!;
               List<Reserva> ListaReservasCompletas = [];
-
+              var desde = _fechaDesde.toString().substring(0,10);
+              var hasta = _fechaHasta.toString().substring(0,10);
               ListaReservasCompletas.addAll(_listaDeReservasAPI);
 
               //print(_listaDeReservasAPI);
               return Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: ListTile(
-                      onTap: (){
-                        showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text("Seleccionar fisioterapeuta"),
-                              content: Container(
-                                height: 300,
-                                width: 300,
-                                child: ListView.builder(
-                                    itemCount: lisAuxEmpleados.length,
-                                    //shrinkWrap: true,
-                                    itemBuilder: (context,index){
-                                      return ListTile(
-                                        onTap: (){
-                                          callDatePicker(context,lisAuxEmpleados,index);
-                                          print(_currentSelectedDate);
-                                        },
-                                        title: Text(lisAuxEmpleados[index].nombreCompleto),
-                                        subtitle: Text(lisAuxEmpleados[index].email!),
-                                        leading: const Icon(Icons.account_circle_outlined),
-                                      );
-                                    }),
-                              ),
-                              actions: [
-                                Center(
-                                  child:TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      print("Cancelar");
-                                    },
-                                    child: Text('Cancelar'),
-                                  ),
-                                )
-                              ],
-                            ));
-                      },
-                      title: Text("Fisioterapeutas"),
-                      trailing: Icon(Icons.assignment_rounded),
+                (allReservas == false)
+                 ? Container(
+                   child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                      Text("Desde:  ",
+                      style: TextStyle(fontSize: 16),),
+                      MaterialButton(
+                          onPressed: (){
+                            callDatePickerRango(context,1);  //cargar en variable '_fechaDesde'
+                          },
+                          color: Colors.blue,
+                          padding: EdgeInsets.all(5),
+                          child: Text("$desde    ▼",
+                              style: TextStyle(color: Colors.white,fontSize: 16,))
+                      ),
+                      Text("  Hasta:  ",
+                        style: TextStyle(fontSize: 16),),
+                      MaterialButton(
+                          onPressed: (){
+                            callDatePickerRango(context,2);   //cargar en variable '_fechaHasta'
+                          },
+                          color: Colors.blue,
+                          padding: EdgeInsets.all(5),
+                          child: Text("$hasta    ▼",
+                              style: TextStyle(color: Colors.white,fontSize: 16,))
+                      )
+                    ],),
+                 ):Container(child: null),
+                (allReservas == false)
+                 ? Container(
+                   child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: ListTile(
+                        onTap: (){
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text("Seleccionar fisioterapeuta"),
+                                content: Container(
+                                  height: 300,
+                                  width: 300,
+                                  child: ListView.builder(
+                                      itemCount: lisAuxEmpleados.length,
+                                      //shrinkWrap: true,
+                                      itemBuilder: (context,index){
+                                        return ListTile(
+                                          onTap: (){
+                                            callDatePicker(context,lisAuxEmpleados,index);
+                                            print(_currentSelectedDate);
+                                          },
+                                          title: Text(lisAuxEmpleados[index].nombreCompleto),
+                                          subtitle: Text(lisAuxEmpleados[index].email!),
+                                          leading: const Icon(Icons.account_circle_outlined),
+                                        );
+                                      }),
+                                ),
+                                actions: [
+                                  Center(
+                                    child:TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        print("Cancelar");
+                                      },
+                                      child: Text('Cancelar'),
+                                    ),
+                                  )
+                                ],
+                              ));
+                        },
+                        title: Text("Fisioterapeutas"),
+                        trailing: Icon(Icons.assignment_rounded),
+                      ),
                     ),
-                  ),
+                 ):Container(child: null),
                   Expanded(
                     child: ListView.builder(
                         itemCount: _listaDeReservasAPI.length,
                         itemBuilder: (context,index){
                           return ListTile(
+                            onLongPress: (){
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Text("Cancelar Reserva"),
+                                    content: Text("Seguro que quieres cancelar la reserva?"),
+                                    actions: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              print("No");
+                                            },
+                                            child: Text('NO'),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: (){
+                                              deleteReserva(_listaDeReservasAPI[index].idReserva);
+                                              Navigator.pop(context);
+                                              setState(() {
+                                                initState();
+                                              });
+                                              //Navigator.pop(context);
+                                            },
+                                            child: Text("SI"),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ));
+                              //Navigator.pop(context);
+
+
+                            },
                             onTap: (){
 
                               var fisio = widget.userLogueado.usuarioLogin;
@@ -195,7 +446,7 @@ class _ReservasState extends State<Reservas> {
                                     context: context,
                                     builder: (context) => AlertDialog(
                                       title: Text("Info de Reserva"),
-                                      content: getInfoReserva(_listaDeReservasAPI[index].fecha,_listaDeReservasAPI[index].horaInicioCadena,_listaDeReservasAPI[index].horaFinCadena,_listaDeReservasAPI[index].empleado,_listaDeReservasAPI[index].cliente)/*Text("Fecha: "+ _listaDeReservasAPI[index].fecha.substring(0,10) +"\nHora Inicio: "+ _listaDeReservasAPI[index].horaInicio
+                                      content: getInfoReserva(_listaDeReservasAPI[index].fecha,_listaDeReservasAPI[index].horaInicioCadena,_listaDeReservasAPI[index].horaFinCadena,_listaDeReservasAPI[index].empleado,_listaDeReservasAPI[index].cliente,_listaDeReservasAPI[index].flagAsistio,_listaDeReservasAPI[index].observacion)/*Text("Fecha: "+ _listaDeReservasAPI[index].fecha.substring(0,10) +"\nHora Inicio: "+ _listaDeReservasAPI[index].horaInicio
                                         +"\nHora Fin: "+ _listaDeReservasAPI[index].horaFin+"\nFisioterapeuta: "+ _listaDeReservasAPI[index].empleado+"\nPaciente: "+ _listaDeReservasAPI[index].cliente)*/,
                                       actions: [
                                         Row(
@@ -262,7 +513,7 @@ class _ReservasState extends State<Reservas> {
                                     context: context,
                                     builder: (context) => AlertDialog(
                                       title: Text("Info de Reserva"),
-                                      content: getInfoReserva(_listaDeReservasAPI[index].fecha,_listaDeReservasAPI[index].horaInicioCadena,_listaDeReservasAPI[index].horaFinCadena,_listaDeReservasAPI[index].empleado,_listaDeReservasAPI[index].cliente)/*Text("Fecha: "+ _listaDeReservasAPI[index].fecha.substring(0,10) +"\nHora Inicio: "+ _listaDeReservasAPI[index].horaInicio
+                                      content: getInfoReserva(_listaDeReservasAPI[index].fecha,_listaDeReservasAPI[index].horaInicioCadena,_listaDeReservasAPI[index].horaFinCadena,_listaDeReservasAPI[index].empleado,_listaDeReservasAPI[index].cliente,_listaDeReservasAPI[index].flagAsistio,_listaDeReservasAPI[index].observacion)/*Text("Fecha: "+ _listaDeReservasAPI[index].fecha.substring(0,10) +"\nHora Inicio: "+ _listaDeReservasAPI[index].horaInicio
                                         +"\nHora Fin: "+ _listaDeReservasAPI[index].horaFin+"\nFisioterapeuta: "+ _listaDeReservasAPI[index].empleado+"\nPaciente: "+ _listaDeReservasAPI[index].cliente)*/,
                                       actions: [
                                         Row(
@@ -280,37 +531,92 @@ class _ReservasState extends State<Reservas> {
                                                 showDialog(
                                                     context: context,
                                                     builder: (context) => AlertDialog(
-                                                      title: Text("Cancelar Reserva"),
-                                                      content: Text("Seguro que quieres cancelar la reserva?"),
+                                                      title: Text("Completar Reserva"),
+                                                      content: Text("Agregar datos de asistencia y observacion"),
                                                       actions: [
+
                                                         Row(
-                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            Text("Asistio: "),
+                                                            Text(""),
+                                                          ],
+                                                        ),
+                                                        TextField(
+                                                          controller: myControllerOk,
+                                                          decoration: InputDecoration(
+                                                            border: OutlineInputBorder(),
+                                                            hintText: "Ingrese Si o No",
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 15,),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                          children: [
+                                                            Text("Observacion: "),
+                                                            Text("(Opcional)")
+                                                          ],
+                                                        ),
+                                                        TextField(
+                                                          controller: myControllerObs,
+                                                          decoration: InputDecoration(
+                                                            border: OutlineInputBorder(),
+                                                            hintText: "Agregar Observacion",
+                                                          ),
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                           children: [
                                                             TextButton(
                                                               onPressed: () {
                                                                 Navigator.pop(context);
-                                                                print("No");
+                                                                print("Atras");
                                                               },
-                                                              child: Text('NO'),
+                                                              child: Text('Atras'),
                                                             ),
                                                             ElevatedButton(
-                                                                onPressed: (){
-                                                                  deleteReserva(_listaDeReservasAPI[index].idReserva);
+                                                              onPressed: (){
+                                                                //deleteReserva(_listaDeReservasAPI[index].idReserva);
+
+                                                                var opcion = myControllerOk.text;
+                                                                opcion = opcion.toUpperCase();
+                                                                if(opcion == 'SI' || opcion == 'NO'){
+                                                                  putReserva(_listaDeReservasAPI[index].idReserva);
                                                                   Navigator.pop(context);
                                                                   setState(() {
                                                                     initState();
                                                                   });
-                                                                  //Navigator.pop(context);
-                                                                },
-                                                                child: Text("SI"),
+                                                                }else{
+                                                                  showDialog(
+                                                                    context: context,
+                                                                    builder: (context){
+                                                                      return AlertDialog(
+                                                                        title: Text("Campos no valido"),
+                                                                        content: Text("Los Datos Ingresados en el campo 'Asistio' no son correctos.\nIngrese 'si' o 'no'"),
+                                                                        actions: [
+                                                                          Center(
+                                                                            child: ElevatedButton(
+                                                                              onPressed: () {
+                                                                                Navigator.pop(context);
+                                                                              },
+                                                                              child: Text('Ok'),
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    });
+                                                                }
+
+                                                                //Navigator.pop(context);
+                                                              },
+                                                              child: Text("Confirmar"),
                                                             )
                                                           ],
-                                                        )
+                                                        ),
                                                       ],
                                                     ));
                                                 //Navigator.pop(context);
                                               },
-                                              child: Text('Cancelar Reserva'),
+                                              child: Text('Completar'),
                                             ),
                                           ],
                                         )
@@ -318,7 +624,7 @@ class _ReservasState extends State<Reservas> {
                                     ));
                               }
                             },
-                            title: getTituloReserva(_listaDeReservasAPI[index].cliente)/*Text(_listaDeReservasAPI[index].horaInicio)*/,
+                            title: getTituloReserva(_listaDeReservasAPI[index].cliente,_listaDeReservasAPI[index].flagAsistio)/*Text(_listaDeReservasAPI[index].horaInicio)*/,
                                 subtitle: getSubtituloReserva(_listaDeReservasAPI[index].horaInicioCadena,_listaDeReservasAPI[index].horaFinCadena)/*Text("Fecha. "+ _listaDeReservasAPI[index].fecha.substring(0,10))*/,
                                     leading: CircleAvatar(
                                       child: Text(_listaDeReservasAPI[index].horaInicioCadena.substring(0,2)),
@@ -343,28 +649,51 @@ class _ReservasState extends State<Reservas> {
     );
   }
 
+  String dateTimeToCadena(dateTime){
+    String fechaCadena;
+    if(dateTime.day < 10 && dateTime.month < 10){
+      fechaCadena = dateTime.year.toString()+"0"+dateTime.month.toString()+"0"+dateTime.day.toString();
+    }else if(dateTime.day < 10){
+      fechaCadena = dateTime.year.toString()+dateTime.month.toString()+"0"+dateTime.day.toString();
+    }else if(dateTime.month < 10){
+      fechaCadena = dateTime.year.toString()+"0"+dateTime.month.toString()+dateTime.day.toString();
+    }else{
+      fechaCadena = dateTime.year.toString()+dateTime.month.toString()+dateTime.day.toString();
+    }
+    print(fechaCadena);
+    print(fechaCadena.length);
+
+    return fechaCadena;
+  }
+
   @override
   void initState() {
 
     print(_listadoReservas);
     DateTime dateToday =DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     print(dateToday);
-    var fechaHoy;
-    if(dateToday.day < 10 && dateToday.month < 10){
-      fechaHoy = dateToday.year.toString()+"0"+dateToday.month.toString()+"0"+dateToday.day.toString();
-    }else if(dateToday.day < 10){
-      fechaHoy = dateToday.year.toString()+dateToday.month.toString()+"0"+dateToday.day.toString();
-    }else if(dateToday.month < 10){
-      fechaHoy = dateToday.year.toString()+"0"+dateToday.month.toString()+dateToday.day.toString();
-    }else{
-      fechaHoy = dateToday.year.toString()+dateToday.month.toString()+dateToday.day.toString();
-    }
-    print(fechaHoy);
-    var id = widget.userLogueado.idPersona;
-    var url = "https://equipoyosh.com/stock-nutrinatalia/persona/$id/agenda?fecha=$fechaHoy";
-    print(url);
-    _listadoReservas = _getReservas(url);
+    var fecha;
 
+    if(allReservas == true){
+      var url = "https://equipoyosh.com/stock-nutrinatalia/reserva";
+      print(url);
+      _listadoReservas = _getReservas(url);
+    }else if(_fechaDesde == hoy && _fechaHasta == hoy){
+      fecha = dateTimeToCadena(dateToday);
+      print(fecha);
+      var id = widget.userLogueado.idPersona;
+      var url = "https://equipoyosh.com/stock-nutrinatalia/persona/$id/agenda?fecha=$fecha";
+      print(url);
+      _listadoReservas = _getReservas(url);
+    }else if(_fechaDesde != hoy || _fechaHasta != hoy){
+      var id = widget.userLogueado.idPersona;
+      var desde = dateTimeToCadena(_fechaDesde);
+      var hasta = dateTimeToCadena(_fechaHasta);
+      var url = "https://equipoyosh.com/stock-nutrinatalia/reserva?ejemplo=%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A$id%7D%2C%22fechaDesdeCadena%22%3A%22$desde%22%2C%22fechaHastaCadena%22%3A%22$hasta%22%7D";
+      print(url);
+      _listadoReservas = _getReservas(url);
+      //%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A3%7D%2C%22fechaDesdeCadena%22%3A%2220190903%22%2C%22fechaHastaCadena%22%3A%220190903%22%7D
+    }
   }
 
   void deleteReserva(idReserva) async{
@@ -376,13 +705,109 @@ class _ReservasState extends State<Reservas> {
     print(response.statusCode);
     print(response.body);
     if(response.statusCode == 200){
-      print("Reserva cancelada");
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              title: Text("Reserva cancelada"),
+              actions: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Ok'),
+                  ),
+                ),
+              ],
+            );
+          });
+      print("La Reserva se actualizo correctamente");
     }else{
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              title: Text("La reserva no puede ser cancelada"),
+              actions: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Ok'),
+                  ),
+                ),
+              ],
+            );
+          });
       print("La reserva no puede ser cancelada");
     }
   }
 
+  void putReserva(idReserva) async{
+    print(idReserva.runtimeType);
+    var SoN = myControllerOk.text.substring(0,1);
+    SoN = SoN.toUpperCase();
+    final headers = {"Content-Type":"application/json"};
+    print(headers);
+    final url = Uri.parse("https://equipoyosh.com/stock-nutrinatalia/reserva");
 
+
+    final _actualizarReserva = {
+      "idReserva": idReserva,
+      "observacion": myControllerObs.text,
+      "flagAsistio": SoN,
+    };
+
+    print(_actualizarReserva.runtimeType);
+    print(url);
+    print(_actualizarReserva);
+    var body = jsonEncode(_actualizarReserva);
+    final response = await http.put(url,body: body,headers: headers);
+    print(response.statusCode);
+    print(response.body);
+    if(response.statusCode == 200){
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              title: Text("La informacion de la Reserva se actualizo correctamente"),
+              actions: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Ok'),
+                  ),
+                ),
+              ],
+            );
+          });
+      print("La Reserva se actualizo correctamente");
+    }else{
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              title: Text("La reserva no puede ser modificada"),
+              actions: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Ok'),
+                  ),
+                ),
+              ],
+            );
+          });
+      print("Error al actualizar los datos de la reserva");
+    }
+
+  }
 
   void saveReserva(fisio,fechaCadena,iniCadena,finCadena,idEmpleado,idCliente) async{
     final headers = {
@@ -410,20 +835,58 @@ class _ReservasState extends State<Reservas> {
     print(response.statusCode);
     print(response.body);
     if(response.statusCode == 200){
-      print("Reserva agg correctamente");
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              title: Text("Reserva Agregada"),
+              actions: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Ok'),
+                  ),
+                ),
+              ],
+            );
+          });
+      print("Reserva Agregada");
     }else{
-      print("Error al cargar datos");
+      showDialog(
+          context: context,
+          builder: (context){
+            return AlertDialog(
+              title: Text("No se pudo cargar la Reserva"),
+              actions: [
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Ok'),
+                  ),
+                ),
+              ],
+            );
+          });
+      print("No se pudo cargar la Reserva");
     }
   }
 }
 
-Widget getTituloReserva(idPersona){
+Widget getTituloReserva(idPersona,flagAsistio){
   late String _title;
   if(idPersona == ""){
     _title = "Disponible";
+  }else if(idPersona != "" && (flagAsistio == 'N' || flagAsistio == 'n')){
+    _title = "No Asistio";
+  }else if(idPersona != "" && (flagAsistio == 'S' || flagAsistio == 's') ){
+    _title = "Completado";
   }else{
     _title = "Reservado";
-  }
+  };
   return Text(_title);
 }
 
@@ -440,7 +903,7 @@ Widget getSubtituloReserva(horaIni,horaFin){
 
 
 
-Widget getInfoReserva(fecha,horaIni,horaFin,fisio,cliente){
+Widget getInfoReserva(fecha,horaIni,horaFin,fisio,cliente,flagAsistio,observacion){
 
   var estado;
 
@@ -450,11 +913,25 @@ Widget getInfoReserva(fecha,horaIni,horaFin,fisio,cliente){
 
   if(cliente == ""){
     estado = "Sin Reservar";
+  }else if(cliente != "" && flagAsistio == 'N'){
+    estado = "No Asistio";
+  }else if(cliente != "" && flagAsistio == 'S'){
+    estado = "Completado";
   }else{
     estado = "Reservado";
-  }
+  };
 
   return Text("Estado: "+ estado +"\nFecha: "+ fecha +"\nHora Inicio: "+ horaIni
-      +"\nHora Fin: "+ horaFin+"\nFisioterapeuta: "+ fisio+"\nPaciente: "+ cliente);
+      +"\nHora Fin: "+ horaFin+"\nFisioterapeuta: "+ fisio+"\nPaciente: "+ cliente+"\nObservacion: "+ observacion);
+}
+
+Widget getTitleAppBar(allReservas){
+  var title;
+  if(allReservas == true){
+    title = "Todas las Reservas";
+  }else{
+    title = "Mis Reservas";
+  }
+  return Text(title);
 }
 

@@ -24,6 +24,8 @@ class _ReservasState extends State<Reservas> {
   late bool porCliente = false;
   late bool porFisio = false;
   late int idFisio;
+  var idCliente;
+  var nameCliente;
   late String nameFisio = widget.userLogueado.nombreCompleto;
 
   late bool misReservas = false;
@@ -48,8 +50,8 @@ class _ReservasState extends State<Reservas> {
       final jsonData = jsonDecode(body);
       //print(jsonData);
       var contador = 0;
-      print(allReservas == true || ((_fechaDesde != hoy || _fechaHasta != hoy) && allReservas == false));
-      if(allReservas == true || ((_fechaDesde != hoy || _fechaHasta != hoy) && allReservas == false) ){
+      print(allReservas == true || ((_fechaDesde != hoy || _fechaHasta != hoy) && allReservas == false) || porCliente == true);
+      if(allReservas == true || ((_fechaDesde != hoy || _fechaHasta != hoy) && allReservas == false) || porCliente == true){
         for (var item in jsonData["lista"]) {
           print(contador++);
           Reserva _r = Reserva(0, "", "", "", "", "", "", "", "", "", "","","");
@@ -224,10 +226,7 @@ class _ReservasState extends State<Reservas> {
     setState(() {
       _currentSelectedDate = selectedDate;
     });
-    /*Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context)=> OtrasReservas(profesionales: widget.profesionales, userLogueado: widget.userLogueado, fechaForListReservas: _currentSelectedDate,fisioterapeuta: lisAux[index],),)
-    );*/
+
   }
   Future<DateTime?> getDatePickerWidget(){
     return showDatePicker(
@@ -252,8 +251,51 @@ class _ReservasState extends State<Reservas> {
           title: getTitleAppBar(allReservas,porFisio,porCliente),
           actions: [
             PopupMenuButton<int>(
-                color: Colors.blue[100],
-                onSelected: (value) {},
+                //color: Colors.blue[100],
+                onSelected: (value) {
+                  if(value == 3){
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: Text("Seleccionar Paciente"),
+                          content: Container(
+                            height: 300,
+                            width: 300,
+                            child: ListView.builder(
+                                itemCount: lisAuxClientes.length,
+                                //shrinkWrap: true,
+                                itemBuilder: (context,index){
+                                  return ListTile(
+                                    onTap: (){
+                                      idCliente = lisAuxClientes[index].idPersona;
+                                      nameCliente = lisAuxClientes[index].nombreCompleto;
+                                      setState(() {
+                                        initState();
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    title: Text(lisAuxClientes[index].nombreCompleto),
+                                    subtitle: Text(lisAuxClientes[index].email!),
+                                    leading: const Icon(Icons.account_box_sharp),
+                                  );
+                                }),
+                          ),
+                          actions: [
+                            Center(
+                              child:TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  print("Cancelar");
+                                },
+                                child: Text('Cancelar'),
+                              ),
+                            )
+                          ],
+                        ));
+                    print("Sale de onTap");
+                  }
+                  //Navigator.pop(context);
+                },
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     value: 1,
@@ -291,17 +333,13 @@ class _ReservasState extends State<Reservas> {
                     value: 3,
                     child: Text("Por Cliente"),
                     onTap: (){
+                      //var idCliente;
+                      print("Entra en el onTap de la opcion por cliente");
                       allReservas = false;
                       porCliente = true;
                       misReservas = false;
                       porFisio = false;
-                      setState(() {
-                        initState();
-                      });
-                      /*Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context)=> AllReservas(widget.userLogueado,profesionales: widget.profesionales,pacientes: widget.pacientes,))
-                      );*/
+
                     },
                   ),
 
@@ -322,15 +360,15 @@ class _ReservasState extends State<Reservas> {
               //print(_listaDeReservasAPI);
               return Column(
                 children: [
-                  (allReservas == false)
+                (allReservas == false)
                   ? Container(
                     child: Row(
                       children: [
-                        getNameAgenda(widget.userLogueado.nombreCompleto, nameFisio),
+                        getNameAgenda(widget.userLogueado.nombreCompleto, nameFisio, porCliente,nameCliente),
                       ],
                     ),
                   ):Container(child: null),
-                (allReservas == false)
+                (allReservas == false && porCliente == false)
                  ? Container(
                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -426,7 +464,7 @@ class _ReservasState extends State<Reservas> {
                               ));
                         },
                         title: Text("Fisioterapeutas"),
-                        trailing: Icon(Icons.assignment_rounded),
+                        trailing: Icon(Icons.arrow_drop_down_sharp),
                       ),
                     ),
                  ):Container(child: null),
@@ -720,14 +758,14 @@ class _ReservasState extends State<Reservas> {
       var url = "https://equipoyosh.com/stock-nutrinatalia/reserva";
       print(url);
       _listadoReservas = _getReservas(url);
-    }else if(_fechaDesde == hoy && _fechaHasta == hoy && porFisio == false){
+    }else if(_fechaDesde == hoy && _fechaHasta == hoy && porFisio == false && porCliente == false){
       fecha = dateTimeToCadena(dateToday);
       print(fecha);
       var id = widget.userLogueado.idPersona;
       var url = "https://equipoyosh.com/stock-nutrinatalia/persona/$id/agenda?fecha=$fecha";
       print(url);
       _listadoReservas = _getReservas(url);
-    }else if(_fechaDesde != hoy || _fechaHasta != hoy && porFisio == false){
+    }else if(_fechaDesde != hoy || _fechaHasta != hoy && porFisio == false && porCliente == false){
       var id = widget.userLogueado.idPersona;
       var desde = dateTimeToCadena(_fechaDesde);
       var hasta = dateTimeToCadena(_fechaHasta);
@@ -735,7 +773,7 @@ class _ReservasState extends State<Reservas> {
       print(url);
       _listadoReservas = _getReservas(url);
       //%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A3%7D%2C%22fechaDesdeCadena%22%3A%2220190903%22%2C%22fechaHastaCadena%22%3A%220190903%22%7D
-    }else if(_fechaDesde == hoy && _fechaHasta == hoy && porFisio == true){
+    }else if(_fechaDesde == hoy && _fechaHasta == hoy && porFisio == true && porCliente == false){
       print("Entro en ordenamiento por fisio");
       fecha = dateTimeToCadena(dateToday);
       print(fecha);
@@ -743,7 +781,7 @@ class _ReservasState extends State<Reservas> {
       var url = "https://equipoyosh.com/stock-nutrinatalia/persona/$id/agenda?fecha=$fecha";
       print(url);
       _listadoReservas = _getReservas(url);
-    }else if(_fechaDesde != hoy || _fechaHasta != hoy && porFisio == true){
+    }else if(_fechaDesde != hoy || _fechaHasta != hoy && porFisio == true && porCliente == false){
       print("Entro en ordenamiento por fisio");
       var id = idFisio;
       var desde = dateTimeToCadena(_fechaDesde);
@@ -752,6 +790,12 @@ class _ReservasState extends State<Reservas> {
       print(url);
       _listadoReservas = _getReservas(url);
       //%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A3%7D%2C%22fechaDesdeCadena%22%3A%2220190903%22%2C%22fechaHastaCadena%22%3A%220190903%22%7D
+    }else if(porCliente == true){
+      print("Entra al ordenamiento por Cliente");
+      var id = idCliente;
+      var url = "https://equipoyosh.com/stock-nutrinatalia/reserva?ejemplo=%7B%22idCliente%22%3A%7B%22idPersona%22%3A$id%7D%7D";
+      print(url);
+      _listadoReservas = _getReservas(url);
     }
   }
 
@@ -996,12 +1040,14 @@ Widget getTitleAppBar(allReservas,porFisio,porCliente){
   return Text(title);
 }
 
-Widget getNameAgenda(nameFisioLogueado,nameFisio){
+Widget getNameAgenda(nameFisioLogueado,nameFisio, porCliente,nameCliente){
   var title;
-  if(nameFisioLogueado == nameFisio){
+  if(nameFisioLogueado == nameFisio && porCliente == false){
     title = "\n   ■   Mi Agenda\n";
-  }else{
+  }else if(nameFisioLogueado != nameFisio && porCliente == false){
     title = "\n   ■   Agenda de: $nameFisio\n";
+  }else if(porCliente == true){
+    title = "\n   ■   Paciente: $nameCliente\n";
   }
   //Text("\n   Agenda de: $nameFisio\n",style: TextStyle(fontSize: 17),),
   return Text(title,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),);

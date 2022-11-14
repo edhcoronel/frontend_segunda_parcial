@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend_segunda_parcial/models/ficha.dart';
+import 'package:frontend_segunda_parcial/pages/agg_fichas.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/persona.dart';
@@ -18,15 +19,16 @@ class Fichas extends StatefulWidget {
 class _FichasState extends State<Fichas> {
 
   DateTime hoy = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-  late bool allFichas = false;
+  late bool allFichas = true;
+  late bool misFichas = false;
   late bool porCliente = false;
+  late bool porFecha = false;
   late bool porFisio = false;
   late int idFisio;
   var idCliente;
   var nameCliente;
   late String nameFisio = widget.userLogueado.nombreCompleto;
-
-  late bool misFichas = false;
+  late bool onDateButton = false;
 
   Future<List<Ficha>>? _listadoFichas;
   final myControllerMotivo = TextEditingController();
@@ -45,63 +47,58 @@ class _FichasState extends State<Fichas> {
     if (response.statusCode == 200) {
       String body = utf8.decode(response.bodyBytes);
       final jsonData = jsonDecode(body);
-      //print(jsonData);
-      var contador = 0;
-      //print(allReservas == true || ((_fechaDesde != hoy || _fechaHasta != hoy) && allReservas == false) || porCliente == true);
-      //if(allFichas == true || porCliente == true){
-      print(response.body);
       for (var item in jsonData["lista"]) {
-          print(contador++);
+          //print(contador++);
 
           Ficha _f = Ficha(0, "", "", "", "", "", "", "", "", "", "", "", "","");
 
-          print(item["idFichaClinica"].runtimeType);
+          //print(item["idFichaClinica"].runtimeType);
           _f.idFicha = item["idFichaClinica"];
-          print(_f.idFicha);
-          print(_f.idFicha.runtimeType);
+          //print(_f.idFicha);
+          //print(_f.idFicha.runtimeType);
 
-          print("\n");
+          //print("\n");
 
-          print(item["fechaHora"].runtimeType);
+          //print(item["fechaHora"].runtimeType);
           _f.fechaHora = item["fechaHora"];
-          print(_f.fechaHora);
-          print(_f.fechaHora.runtimeType);
+          //print(_f.fechaHora);
+          //print(_f.fechaHora.runtimeType);
 
-          print("\n");
+          //print("\n");
 
-          print(item["motivoConsulta"].runtimeType);
+          //print(item["motivoConsulta"].runtimeType);
           _f.motivoConsulta = item["motivoConsulta"];
-          print(_f.motivoConsulta);
-          print(_f.motivoConsulta.runtimeType);
+          //print(_f.motivoConsulta);
+          //print(_f.motivoConsulta.runtimeType);
 
-          print("\n");
+          //print("\n");
 
-          print(item["diagnostico"].runtimeType);
+          //print(item["diagnostico"].runtimeType);
           _f.diagnostico = item["diagnostico"];
-          print(_f.diagnostico);
-          print(_f.diagnostico.runtimeType);
+          //print(_f.diagnostico);
+          //print(_f.diagnostico.runtimeType);
 
-          print("\n");
+          //print("\n");
 
-          print(item["observacion"].runtimeType);
+          //print(item["observacion"].runtimeType);
           if(item["observacion"] != null){
             _f.observacion = item["observacion"];
           }else{
             _f.observacion = "";
           }
-          print(_f.observacion);
-          print(_f.observacion.runtimeType);
+          //print(_f.observacion);
+          //print(_f.observacion.runtimeType);
 
-          print("\n");
+          //print("\n");
 
           /*if(item["idEmpleado"] != null){
             _f.idEmpleado = item["idEmpleado"]["idPersona"];
           }else{
             _f.idEmpleado = "";
           }*/
-          print(item["idEmpleado"].runtimeType);
+          //print(item["idEmpleado"].runtimeType);
           if(item["idEmpleado"] != null){
-            print(item["idEmpleado"]["nombreCompleto"]);
+            //print(item["idEmpleado"]["nombreCompleto"]);
             if(item["idEmpleado"]["nombreCompleto"] != null){
               _f.nameEmpleado = item["idEmpleado"]["nombreCompleto"];
             }else{
@@ -110,70 +107,72 @@ class _FichasState extends State<Fichas> {
           }else{
             _f.nameEmpleado = "";
           }
-          print(_f.nameEmpleado);
-          print(_f.nameEmpleado.runtimeType);
+          //print(_f.nameEmpleado);
+          //print(_f.nameEmpleado.runtimeType);
           /*if(item["idCliente"] != null){
             _f.idCliente = item["idCliente"]["idPersona"];
           }else{
             _f.idCliente = "";
           }*/
-          print("\n");
-          print(item["idCliente"].runtimeType);
+          //print("\n");
+          //print(item["idCliente"].runtimeType);
           if(item["idCliente"] != null){
-            print(item["idCliente"]["nombreCompleto"]);
+            //print(item["idCliente"]["nombreCompleto"]);
             _f.nameCliente = item["idCliente"]["nombreCompleto"];
           }else{
             _f.nameCliente = "";
           }
-          print(_f.nameCliente);
-          print(_f.nameCliente.runtimeType);
+          //print(_f.nameCliente);
+          //print(_f.nameCliente.runtimeType);
 
           /*if(item["idTipoProducto"] != null){
             _f.idTipoProducto = item["idTipoProducto"]["idTipoProducto"];
           }else{
             _f.idTipoProducto = "";
           }*/
-          print("\n");
-          print(item["idTipoProducto"].runtimeType);
+          //print("\n");
+          //print(item["idTipoProducto"].runtimeType);
           if(item["idTipoProducto"] != null){
             _f.subCategoria = item["idTipoProducto"]["descripcion"];
           }else{
             _f.subCategoria = "";
           }
-          print(_f.subCategoria);
-          print(_f.subCategoria.runtimeType);
+          //print(_f.subCategoria);
+          //print(_f.subCategoria.runtimeType);
 
-          print("\n");
-          print(item["idTipoProducto"]["idCategoria"].runtimeType);
+          //print("\n");
+          //print(item["idTipoProducto"]["idCategoria"].runtimeType);
           if(item["idTipoProducto"]["idCategoria"] != null){
-            print(item["idTipoProducto"]["idCategoria"]["descripcion"]);
+            //print(item["idTipoProducto"]["idCategoria"]["descripcion"]);
             _f.categoria = item["idTipoProducto"]["idCategoria"]["descripcion"];
           }else{
             _f.categoria = "";
           }
-          print(_f.categoria);
-          print(_f.categoria.runtimeType);
+          //print(_f.categoria);
+          //print(_f.categoria.runtimeType);
 
-          print("\n");
-          print(item["fechaDesdeCadena"].runtimeType);
+          //print("\n");
+          //print(item["fechaDesdeCadena"].runtimeType);
           if(item["fechaDesdeCadena"] != null){
             _f.fechaDesdeCadena = item["fechaDesdeCadena"];
           }else{
             _f.fechaDesdeCadena = "";
           }
-          print(_f.fechaDesdeCadena);
-          print(_f.fechaDesdeCadena.runtimeType);
+          //print(_f.fechaDesdeCadena);
+          //print(_f.fechaDesdeCadena.runtimeType);
 
 
-          print("\n");
-          print(item["fechaHastaCadena"].runtimeType);
+          //print("\n");
+          //print(item["fechaHastaCadena"].runtimeType);
           if(item["fechaHastaCadena"] != null){
             _f.fechaHastaCadena = item["fechaHastaCadena"];
           }else{
             _f.fechaHastaCadena = "";
           }
-          print(_f.fechaHastaCadena);
-          print(_f.fechaHastaCadena.runtimeType);
+          //print(_f.fechaHastaCadena);
+          //print(_f.fechaHastaCadena.runtimeType);
+          fichas.add(_f);
+          //print(_f);
 
         }
       /*}else{
@@ -281,7 +280,9 @@ class _FichasState extends State<Fichas> {
           aux1 = selectedDate;
           _fechaDesde = aux1;
         }
-        initState();
+        setState(() {
+          initState();
+        });
       }else if(value == 2){
         if(selectedDate!.year < _fechaDesde.year){
           getMensajeRangoNoValido(context, "La fecha 'Hasta' no puede ser MENOR que la fecha 'Desde'");
@@ -293,7 +294,10 @@ class _FichasState extends State<Fichas> {
           aux2 = selectedDate;
           _fechaHasta = aux2;
         }
-        initState();
+        porFecha = true;
+        setState(() {
+          initState();
+        });
       }
     });
   }
@@ -370,9 +374,11 @@ class _FichasState extends State<Fichas> {
                 child: Text("Todas las Fichas"),
                 onTap: (){
                   allFichas = true;
-                  porCliente = false;
                   misFichas = false;
+                  porCliente = false;
+                  porFecha = false;
                   porFisio = false;
+                  onDateButton = false;
                   setState(() {
                     initState();
                   });
@@ -387,9 +393,11 @@ class _FichasState extends State<Fichas> {
                 child: Text("Mis Fichas"),
                 onTap: (){
                   allFichas = false;
-                  porCliente = false;
                   misFichas = true;
+                  porCliente = false;
+                  porFecha = false;
                   porFisio = false;
+                  onDateButton = false;
                   _fechaDesde = hoy;
                   _fechaHasta = hoy;
                   setState(() {
@@ -404,13 +412,30 @@ class _FichasState extends State<Fichas> {
                   //var idCliente;
                   print("Entra en el onTap de la opcion por cliente");
                   allFichas = false;
-                  porCliente = true;
                   misFichas = false;
+                  porCliente = true;
+                  porFecha = false;
                   porFisio = false;
-
+                  onDateButton = false;
                 },
               ),
-
+              PopupMenuItem(
+                value: 4,
+                child: Text("Por Fecha"),
+                onTap: (){
+                  //var idCliente;
+                  print("Entra en el onTap de la opcion por fecha");
+                  allFichas = false;
+                  misFichas = false;
+                  porCliente = false;
+                  porFecha = true;
+                  porFisio = false;
+                  onDateButton = true;
+                  setState(() {
+                    initState();
+                  });
+                },
+              ),
             ],)
         ],
       ),
@@ -423,49 +448,14 @@ class _FichasState extends State<Fichas> {
             var desde = _fechaDesde.toString().substring(0,10);
             var hasta = _fechaHasta.toString().substring(0,10);
             ListaFichasCompletas.addAll(_listaDeFichasAPI);
+            //print(_listaDeFichasAPI);
+            //print(snapshot.data);
+            //print(lisAuxEmpleados);
+            //print(lisAuxClientes);
 
             return Column(
               children: [
-                (allFichas == false)
-                  ? Container(
-                  child: Row(
-                    children: [
-                      getNameAgenda(widget.userLogueado.nombreCompleto, nameFisio, porCliente,nameCliente),
-                    ],
-                  ),
-                ):Container(child: null),
-                (allFichas == false && porCliente == false)
-                  ? Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Desde:  ",
-                          style: TextStyle(fontSize: 16),),
-                        MaterialButton(
-                            onPressed: (){
-                              callDatePickerRango(context,1);  //cargar en variable '_fechaDesde'
-                            },
-                            color: Colors.blue,
-                            padding: EdgeInsets.all(5),
-                            child: Text("$desde    ▼",
-                                style: TextStyle(color: Colors.white,fontSize: 16,))
-                        ),
-                        Text("  Hasta:  ",
-                          style: TextStyle(fontSize: 16),),
-                        MaterialButton(
-                            onPressed: (){
-                              callDatePickerRango(context,2);   //cargar en variable '_fechaHasta'
-                            },
-                            color: Colors.blue,
-                            padding: EdgeInsets.all(5),
-                            child: Text("$hasta    ▼",
-                                style: TextStyle(color: Colors.white,fontSize: 16,))
-                        )
-                      ],
-                    ),
-                ):Container(child: null),
-                (allFichas == false)
-                 ? Container(
+                Container(
                   child: Padding(
                     padding: const EdgeInsets.all(2.0),
                     child: ListTile(
@@ -483,12 +473,19 @@ class _FichasState extends State<Fichas> {
                                     itemBuilder: (context,index){
                                       return ListTile(
                                         onTap: (){
-                                          //callDatePicker();
+                                          allFichas = false;
+                                          misFichas = false;
+                                          porCliente = false;
+                                          porFecha = false;
+                                          porFisio = true;
+                                          onDateButton = false;
                                           if(lisAuxEmpleados[index].idPersona == widget.userLogueado.idPersona){
                                             allFichas = false;
-                                            porCliente = false;
                                             misFichas = true;
+                                            porCliente = false;
+                                            porFecha = false;
                                             porFisio = false;
+                                            onDateButton = false;
                                             _fechaDesde = hoy;
                                             _fechaHasta = hoy;
                                             nameFisio = lisAuxEmpleados[index].nombreCompleto;
@@ -496,10 +493,6 @@ class _FichasState extends State<Fichas> {
                                               initState();
                                             });
                                           }else{
-                                            allFichas = false;
-                                            porCliente = false;
-                                            misFichas = false;
-                                            porFisio = true;
                                             idFisio = lisAuxEmpleados[index].idPersona;
                                             nameFisio = lisAuxEmpleados[index].nombreCompleto;
                                             _fechaDesde = hoy;
@@ -534,6 +527,44 @@ class _FichasState extends State<Fichas> {
                       trailing: Icon(Icons.arrow_drop_down_sharp),
                     ),
                   ),
+                ),
+                (allFichas == false && porFecha == false)
+                  ? Container(
+                  child: Row(
+                    children: [
+                      getNameAgenda(widget.userLogueado.nombreCompleto, nameFisio, porCliente,nameCliente),
+                    ],
+                  ),
+                ):Container(child: null),
+                (onDateButton == true)
+                  ? Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Desde:  ",
+                          style: TextStyle(fontSize: 16),),
+                        MaterialButton(
+                            onPressed: (){
+                              callDatePickerRango(context,1);  //cargar en variable '_fechaDesde'
+                            },
+                            color: Colors.blue,
+                            padding: EdgeInsets.all(5),
+                            child: Text("$desde    ▼",
+                                style: TextStyle(color: Colors.white,fontSize: 16,))
+                        ),
+                        Text("  Hasta:  ",
+                          style: TextStyle(fontSize: 16),),
+                        MaterialButton(
+                            onPressed: (){
+                              callDatePickerRango(context,2);   //cargar en variable '_fechaHasta'
+                            },
+                            color: Colors.blue,
+                            padding: EdgeInsets.all(5),
+                            child: Text("$hasta    ▼",
+                                style: TextStyle(color: Colors.white,fontSize: 16,))
+                        )
+                      ],
+                    ),
                 ):Container(child: null),
                 Expanded(
                     child: ListView.builder(
@@ -599,10 +630,10 @@ class _FichasState extends State<Fichas> {
                                                               var opcion = myControllerObservacion.text;
                                                               if(opcion != null){
                                                                 putReserva(Fisio,_listaDeFichasAPI[index].idFicha);
-                                                                Navigator.pop(context);
                                                                 setState(() {
                                                                   initState();
                                                                 });
+                                                                Navigator.pop(context);
                                                               }else{
                                                                 showDialog(
                                                                     context: context,
@@ -660,6 +691,21 @@ class _FichasState extends State<Fichas> {
           );
         },
       ),
+      floatingActionButton: botonAggPacientes(),
+    );
+  }
+
+
+  Widget botonAggPacientes(){
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context)=> Agg_fichas())
+        );
+        print('Button pressed');
+      },
+      child: Icon(Icons.add),
     );
   }
 
@@ -685,40 +731,49 @@ class _FichasState extends State<Fichas> {
     print(_listadoFichas);
     DateTime dateToday =DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
     print(dateToday);
-    var fecha;
 
-    if(allFichas == true){
+    if(allFichas){  //estado inicial
+      print("Primer if (Todas las fichas clinicas)");
       var url = "https://equipoyosh.com/stock-nutrinatalia/fichaClinica";
       print(url);
       _listadoFichas = _getFichas(url);
-    }else if(_fechaDesde == hoy && _fechaHasta == hoy && porFisio == false && porCliente == false){  //fichas del dia
-      fecha = dateTimeToCadena(dateToday);
-      print(fecha);
-      //var id = widget.userLogueado.idPersona;
-      var url = "https://equipoyosh.com/stock-nutrinatalia/fichaClinica?ejemplo=%7B%22fechaDesdeCadena%22%3A%22$fecha%22%2C%22fechaHastaCadena%22%3A%22$fecha%22%7D";
-      //var url = "https://equipoyosh.com/stock-nutrinatalia/persona/$id/agenda?fecha=$fecha";
-      print(url);
-      _listadoFichas = _getFichas(url);
-    }else if(_fechaDesde != hoy || _fechaHasta != hoy && porFisio == false && porCliente == false){
-      //var id = widget.userLogueado.idPersona;
-      var desde = dateTimeToCadena(_fechaDesde);
-      var hasta = dateTimeToCadena(_fechaHasta);
-      var url = "https://equipoyosh.com/stock-nutrinatalia/fichaClinica?ejemplo=%7B%22fechaDesdeCadena%22%3A%22$desde%22%2C%22fechaHastaCadena%22%3A%22$hasta%22%7D";
-      print(url);
-      _listadoFichas = _getFichas(url);
-      //%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A3%7D%2C%22fechaDesdeCadena%22%3A%2220190903%22%2C%22fechaHastaCadena%22%3A%220190903%22%7D
-    }else if(porFisio == true && porCliente == false){
-      print("Entro en ordenamiento por fisio");
-      fecha = dateTimeToCadena(dateToday);
-      print(fecha);
+    } else if(misFichas){
+      print("Segundo if (Mis fichas Clinicas)");
+      /*fecha = dateTimeToCadena(dateToday);
+      print(fecha);*/
       var id = widget.userLogueado.idPersona;
       var url = "https://equipoyosh.com/stock-nutrinatalia/fichaClinica?ejemplo=%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A$id%7D%7D";
       print(url);
       _listadoFichas = _getFichas(url);
-    }else if(porCliente == true){
-      print("Entra al ordenamiento por Cliente");
+    }else if(porCliente){
+      print("Quintp if Ordenar por cliente, todas sus fichas clinicas");
       var id = idCliente;
       var url = "https://equipoyosh.com/stock-nutrinatalia/fichaClinica?ejemplo=%7B%22idCliente%22%3A%7B%22idPersona%22%3A$id%7D%7D";
+      print(url);
+      _listadoFichas = _getFichas(url);
+    }else if(misFichas){
+      print("Segundo if (Mis fichas Clinicas)");
+      /*fecha = dateTimeToCadena(dateToday);
+      print(fecha);*/
+      var id = widget.userLogueado.idPersona;
+      var url = "https://equipoyosh.com/stock-nutrinatalia/fichaClinica?ejemplo=%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A$id%7D%7D";
+      print(url);
+      _listadoFichas = _getFichas(url);
+    }else if(porFecha){
+      //var id = widget.userLogueado.idPersona;
+      var desde = dateTimeToCadena(_fechaDesde);
+      var hasta = dateTimeToCadena(_fechaHasta);
+      print("Tercer if (Las fichas clinicas en un rango de fecha)  Desde "+desde+"  ----> Hasta "+hasta);
+      var url = "https://equipoyosh.com/stock-nutrinatalia/fichaClinica?ejemplo=%7B%22fechaDesdeCadena%22%3A%22$desde%22%2C%22fechaHastaCadena%22%3A%22$hasta%22%7D";
+      print(url);
+      _listadoFichas = _getFichas(url);
+      //%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A3%7D%2C%22fechaDesdeCadena%22%3A%2220190903%22%2C%22fechaHastaCadena%22%3A%220190903%22%7D
+    } else if(porFisio){
+      print("Segundo if (Mis fichas Clinicas)");
+      /*fecha = dateTimeToCadena(dateToday);
+      print(fecha);*/
+      var id = idFisio;
+      var url = "https://equipoyosh.com/stock-nutrinatalia/fichaClinica?ejemplo=%7B%22idEmpleado%22%3A%7B%22idPersona%22%3A$id%7D%7D";
       print(url);
       _listadoFichas = _getFichas(url);
     }
@@ -794,10 +849,8 @@ Widget getTitleAppBar(allFichas,porFisio,porCliente){
   var title;
   if(allFichas == true){
     title = "Todas las Fichas";
-  }else if(porFisio == true || porCliente == true){
-    title = "Fichas";
   }else{
-    title = "Fichas";
+    title = "Fichas Clinicas";
   }
   return Text(title);
 }
@@ -807,18 +860,18 @@ Widget getNameAgenda(nameFisioLogueado,nameFisio, porCliente,nameCliente){
   if(nameFisioLogueado == nameFisio && porCliente == false){
     title = "\n   ■   Mis Fichas Clinicas\n";
   }else if(nameFisioLogueado != nameFisio && porCliente == false){
-    title = "\n   ■   Fichas Clinicas de: $nameFisio\n";
+    title = "\n   ■   Profesional: $nameFisio\n";
   }else if(porCliente == true){
     title = "\n   ■   Paciente: $nameCliente\n";
   }
   //Text("\n   Agenda de: $nameFisio\n",style: TextStyle(fontSize: 17),),
-  return Text(title,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),);
+  return Text(title,style: TextStyle(fontSize: 16.5,fontWeight: FontWeight.bold),);
 }
 
 Widget getInfoFichaClinica(categoria,subcategoria,fecha,desde,hasta,fisio,cliente,motivo,diagnostico,observacion){
   fecha = fecha.substring(0, 10);
   return Text("Categoria: "+ categoria +"\nSub Categoria: "+ subcategoria +"\nFecha: "+ fecha +"\nMotivo de Consulta: "+ motivo
-      +"\nDiagnostico: "+ diagnostico+"\Observacion: "+ observacion+"\nFisioterapeuta: "+ fisio+"\nPaciente: "+ cliente+"\nObservacion: "+ observacion);
+      +"\nDiagnostico: "+ diagnostico+"\nFisioterapeuta: "+ fisio+"\nPaciente: "+ cliente+"\nObservacion: "+ observacion);
 }
 
 Widget getTituloFicha(categoria){

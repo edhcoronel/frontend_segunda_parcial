@@ -348,7 +348,7 @@ class _ReservasState extends State<Reservas> {
           future: _listadoReservas,
           builder: (context, snapshot){
             if(snapshot.hasData){
-              //print(snapshot.data);
+              print(snapshot.data);
               final _listaDeReservasAPI = snapshot.data!;
               List<Reserva> ListaReservasCompletas = [];
               var desde = _fechaDesde.toString().substring(0,10);

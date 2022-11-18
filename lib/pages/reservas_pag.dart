@@ -360,6 +360,78 @@ class _ReservasState extends State<Reservas> {
                 children: [
                 (allReservas == false)
                   ? Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: ListTile(
+                      onTap: (){
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text("Seleccionar fisioterapeuta"),
+                              content: Container(
+                                height: 300,
+                                width: 300,
+                                child: ListView.builder(
+                                    itemCount: lisAuxEmpleados.length,
+                                    //shrinkWrap: true,
+                                    itemBuilder: (context,index){
+                                      return ListTile(
+                                        onTap: (){
+                                          //callDatePicker();
+                                          if(lisAuxEmpleados[index].idPersona == widget.userLogueado.idPersona){
+                                            allReservas = false;
+                                            porCliente = false;
+                                            misReservas = true;
+                                            porFisio = false;
+                                            _fechaDesde = hoy;
+                                            _fechaHasta = hoy;
+                                            nameFisio = lisAuxEmpleados[index].nombreCompleto;
+                                            setState(() {
+                                              initState();
+                                            });
+                                          }else{
+                                            allReservas = false;
+                                            porCliente = false;
+                                            misReservas = false;
+                                            porFisio = true;
+                                            idFisio = lisAuxEmpleados[index].idPersona;
+                                            userFisio = lisAuxEmpleados[index].usuarioLogin;
+                                            nameFisio = lisAuxEmpleados[index].nombreCompleto;
+                                            _fechaDesde = hoy;
+                                            _fechaHasta = hoy;
+                                            setState(() {
+                                              initState();
+                                            });
+                                          }
+                                          print(_currentSelectedDate);
+                                          Navigator.pop(context);
+                                        },
+                                        title: Text(lisAuxEmpleados[index].nombreCompleto),
+                                        subtitle: Text(lisAuxEmpleados[index].email!),
+                                        leading: const Icon(Icons.account_circle_outlined),
+                                      );
+                                    }),
+                              ),
+                              actions: [
+                                Center(
+                                  child:TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      print("Cancelar");
+                                    },
+                                    child: Text('Cancelar'),
+                                  ),
+                                )
+                              ],
+                            ));
+                      },
+                      title: Text("Fisioterapeutas"),
+                      trailing: Icon(Icons.arrow_drop_down_sharp),
+                    ),
+                  ),
+                ):Container(child: null),
+                (allReservas == false)
+                  ? Container(
                     child: Row(
                       children: [
                         getNameAgenda(widget.userLogueado.nombreCompleto, nameFisio, porCliente,nameCliente),
@@ -367,7 +439,7 @@ class _ReservasState extends State<Reservas> {
                     ),
                   ):Container(child: null),
                 (allReservas == false && porCliente == false)
-                 ? Container(
+                  ? Container(
                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -394,78 +466,6 @@ class _ReservasState extends State<Reservas> {
                               style: TextStyle(color: Colors.white,fontSize: 16,))
                       )
                     ],),
-                 ):Container(child: null),
-                (allReservas == false)
-                 ? Container(
-                   child: Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: ListTile(
-                        onTap: (){
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text("Seleccionar fisioterapeuta"),
-                                content: Container(
-                                  height: 300,
-                                  width: 300,
-                                  child: ListView.builder(
-                                      itemCount: lisAuxEmpleados.length,
-                                      //shrinkWrap: true,
-                                      itemBuilder: (context,index){
-                                        return ListTile(
-                                          onTap: (){
-                                            //callDatePicker();
-                                            if(lisAuxEmpleados[index].idPersona == widget.userLogueado.idPersona){
-                                              allReservas = false;
-                                              porCliente = false;
-                                              misReservas = true;
-                                              porFisio = false;
-                                              _fechaDesde = hoy;
-                                              _fechaHasta = hoy;
-                                              nameFisio = lisAuxEmpleados[index].nombreCompleto;
-                                              setState(() {
-                                                initState();
-                                              });
-                                            }else{
-                                              allReservas = false;
-                                              porCliente = false;
-                                              misReservas = false;
-                                              porFisio = true;
-                                              idFisio = lisAuxEmpleados[index].idPersona;
-                                              userFisio = lisAuxEmpleados[index].usuarioLogin;
-                                              nameFisio = lisAuxEmpleados[index].nombreCompleto;
-                                              _fechaDesde = hoy;
-                                              _fechaHasta = hoy;
-                                              setState(() {
-                                                initState();
-                                              });
-                                            }
-                                            print(_currentSelectedDate);
-                                            Navigator.pop(context);
-                                          },
-                                          title: Text(lisAuxEmpleados[index].nombreCompleto),
-                                          subtitle: Text(lisAuxEmpleados[index].email!),
-                                          leading: const Icon(Icons.account_circle_outlined),
-                                        );
-                                      }),
-                                ),
-                                actions: [
-                                  Center(
-                                    child:TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        print("Cancelar");
-                                      },
-                                      child: Text('Cancelar'),
-                                    ),
-                                  )
-                                ],
-                              ));
-                        },
-                        title: Text("Fisioterapeutas"),
-                        trailing: Icon(Icons.arrow_drop_down_sharp),
-                      ),
-                    ),
                  ):Container(child: null),
                   Expanded(
                     child: ListView.builder(
